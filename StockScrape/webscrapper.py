@@ -25,11 +25,24 @@ urls = [
     'https://www.investing.com/equities/wal-mart-stores',
     'https://www.investing.com/equities/disney',
     ]
+chart = [[""] * 15 for _ in range (len(urls))]
 
-companies = []
-prices = []
-changes = []
-volumes = []
+print (chart)
+# 0. Companies
+# 1. Prices
+# 2. Changes
+# 3. Previous Close
+# 4. Open
+# 5. Day's Range
+# 6. 52 Week Range
+# 7. Volume
+# 8. Avg Volume
+# 9. Market Cap
+# 10. Beta (5Y Monthly)
+# 11. PE Ratio (TTM)
+# 12. EPS (TTM)
+# 13. Forward Dividend & Yield
+# 14. 1y Target Est
 
 for i in urls:
     # Make a request to fetch the content of the webpage
@@ -44,7 +57,7 @@ for i in urls:
         company_element = soup.find('h1', {'mb-2.5 text-left text-xl font-bold leading-7 text-[#232526] md:mb-2 md:text-3xl md:leading-8 rtl:soft-ltr'})
         if company_element:
             company = company_element.text
-            companies.append(company_element.text)
+            chart[i][0] = company
         else:
             company = None
             print("Company name not found.")
@@ -55,7 +68,7 @@ for i in urls:
             price_span = price_container.find_all('span')
             if len(price_span) > 0:
                 price = price_span[0].text
-                prices.append(price_span[0].text)
+                chart[i][1] = price_span[0].text
             else:
                 price = None
                 print("Price span not found.")
@@ -66,7 +79,7 @@ for i in urls:
         # Extract the change
         if price_container and len(price_span) > 2:
             change = price_span[2].text
-            changes.append(price_span[2].text)
+            chart[i][2] = price_span[2].text
         else:
             change = None
             print("Change not found.")
@@ -75,7 +88,7 @@ for i in urls:
         volume_element = soup.find('dd', {'data-test' : 'volume'})
         if volume_element:
             volume = volume_element.text
-            volumes.append(volume_element.text)
+            chart[i][7] = volume_element.text
         else:
             volume = None
             print("Volume not found.")
@@ -86,17 +99,30 @@ for i in urls:
         print(f"Price: {price}")
         print(f"Change: {change}")
         print(f"Volume: {volume}")
+        
+        data = {
+        'Price': [price],
+        'Change': [change],
+        'Volume': [volume]
+        }
+    
+        df = pd.DataFrame(data)
+        file_name = 'StockData.xlsx'
+        with pd.ExcelWriter(file_name) as writer:
+            df.to_excel(writer, index=True, sheet_name=company)
+        
+        print(f"Data has been written to {file_name}")
     else:
         print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
 print('------------------------------')
 
-stock_data = pd.DataFrame({'Company' : companies,
-                           'Price' : prices,
-                           'Change' : changes,
-                           'Volume' : volumes})
+# stock_data = pd.DataFrame({'Company' : companies,
+#                            'Price' : prices,
+#                            'Change' : changes,
+#                            'Volume' : volumes})
 
-datatoexcel = pd.ExcelWriter('StockData.xlsx')
+# datatoexcel = pd.ExcelWriter('StockData.xlsx')
 
-stock_data.to_excel(datatoexcel)
+# stock_data.to_excel(datatoexcel)
 
-datatoexcel.close()
+# datatoexcel.close()
