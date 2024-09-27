@@ -2,9 +2,9 @@ import pyautogui
 import time
 from PIL import ImageGrab
 
-def get_color_at_mouse():
+def get_color_at_mouse(x, y):
     # Get the current mouse position
-    x, y = pyautogui.position()
+    
 
     # Take a screenshot of the screen
     screenshot = ImageGrab.grab()
@@ -16,10 +16,11 @@ def get_color_at_mouse():
 
 try:
     while True:
-        color = get_color_at_mouse()
+        x, y = pyautogui.position()
+        color = get_color_at_mouse(x, y)
         
         # Clear the console line (optional)
-        print(f"\rMouse position: ({color})", end='')
+        print(f"\rMouse position: ({x}, {y}), ({color})", end='')
         
         # Wait for a short period before updating
         time.sleep(0.01)
