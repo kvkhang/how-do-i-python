@@ -1,0 +1,71 @@
+# Byte-compiled files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Virtual environment directories
+venv/
+env/
+*.env
+*.venv
+
+# Distribution/build directories
+build/
+dist/
+*.egg-info/
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# IDE/editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Test coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache/
+nosetests.xml
+coverage.xml
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environments and package managers
+pip-log.txt
+pip-delete-this-directory.txt
+*.whl
+
+# PyInstaller files
+*.spec
+
+# Celery
+celerybeat-schedule
+
+# Django specific
+*.db
+*.pot
+*.py[cod]
+db.sqlite3
+instance/
+.venv/
+staticfiles/
+media/
+
+# Flask specific
+instance/
+.webassets-cache
+
+# MyPy
+.mypy_cache/
+
+# Pytest
+.pytest_cache/
+
+# TypeScript files
+*.tsbuildinfo
