@@ -69,3 +69,6 @@ instance/
 
 # TypeScript files
 *.tsbuildinfo
+
+# Other Repositories
+CSS486/hw2
