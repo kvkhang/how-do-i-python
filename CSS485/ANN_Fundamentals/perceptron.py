@@ -23,12 +23,12 @@ class PerceptronLayer:
 
         elif isinstance(iw, np.ndarray) and isinstance(jb, np.ndarray):
             if len(jb) != len(iw):
-                return ValueError("Bias must be only 1 row")
+                raise ValueError("Bias must be only 1 row")
             self.weights = iw
             self.bias = jb
 
         else:
-            return ValueError("Input 2 Scalars or 2 Matrixes")
+            raise ValueError("Input 2 Scalars or 2 Matrixes")
 
         self.tf = getattr(tf, tfname)
 
@@ -44,7 +44,7 @@ class PerceptronLayer:
 
     def forwardLoop(self, inputs):
         if len(inputs) != len(self.weights[0]):
-            return ValueError(f"You need {len(self.weights)} inputs")
+            raise ValueError(f"You need {len(self.weights)} inputs")
         output = np.zeros(len(self.bias))
         i = 0
         for weights, b in zip(self.weights, self.bias):
@@ -66,22 +66,57 @@ class PerceptronLayer:
 
     def forward(self, inputs):
         if len(inputs) != len(self.weights[0]):
-            return ValueError(f"You need {len(self.weights)} inputs")
-        output = (self.weights @ inputs) + self.bias
+            raise ValueError(f"You need {len(self.weights)} inputs")
+        output = (self.weights @ inputs.T) + self.bias
         return self.tf(output)
-
+    
     def errorLoss(self, a, t):
         if len(a) != len(t):
-            return ValueError("Length MisMatch")
+            raise ValueError("Length MisMatch")
         return t - a
 
     def backward(self, errors):
-        pass
+        if (errors.ndim == 1):
+            if len(errors) != (len(self.weights[0]) + 1):
+                raise ValueError(f"You need {len(self.weights)} inputs")
+        elif len(self.weights) > 1:
+            if len(errors) != len(self.weights):
+                raise ValueError(f"You need {len(self.weights)} by {len(self.weights[0])} inputs")
+        for x in range(len(errors)):
+            self.bias[x] += errors[x][-1]
+        if errors.ndim == 1:
+            errors = np.delete(errors, -1)
+        else:
+            errors = np.delete(errors, -1, axis=1)
+        self.weights += errors
 
     def print(self):
         print("Layer:")
         i = 1
         for x, b in zip(self.weights, self.bias):
-            print(f"   w{i} = {x}\tb = {b}")
+            print(f"   W{i} = {x}\tb = {b}")
             i += 1
-        pass
+
+    def train(self, p_Train, t_Train):
+        if (len(p_Train) < 2):
+            raise ValueError("Must pass in more than 2 values")
+        if (len(p_Train) != len(t_Train)):
+            raise ValueError("Both vectors must have the same amount of answers")
+        i = 0
+        check = True
+        while check:
+            check = False
+            for x, t in zip(p_Train, t_Train):
+                output = self.forward(x)
+                error = np.array([self.errorLoss(output, t)])
+                
+                x = np.array(x).reshape(-1, 1)
+                
+                if (np.sum(error) != 0):
+                    check = True
+                    
+                errorInput = error.T * x.T
+                errorInput = 0.1 * np.append(errorInput, error.T, axis=1)
+                self.backward(errorInput)
+            i += 1
+        return i
